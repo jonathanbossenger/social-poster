@@ -184,15 +184,15 @@ function PostComposer({ accounts, onSchedule, onPostNow }) {
             `${r.platform} (${r.username}): ${r.success ? '✓ Success' : '✗ Failed - ' + r.error}`
           ).join('\n');
           
-          alert(message + '\n\nDetails:\n' + details);
+          alert(`${message}\n\nDetails:\n${details}`);
           
           // Reset form after successful post
           resetForm();
         } else {
-          alert('Failed to post: ' + response.error);
+          alert(`Failed to post: ${response.error}`);
         }
       } catch (error) {
-        alert('Error posting: ' + error.message);
+        alert(`Error posting: ${error.message}`);
       } finally {
         setIsPosting(false);
       }

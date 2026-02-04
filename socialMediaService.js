@@ -161,7 +161,7 @@ class SocialMediaService {
    */
   createMockResponse(platform, account, postData) {
     const timestamp = new Date().toISOString();
-    const postId = `${platform}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const postId = `${platform}_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     
     let content = '';
     switch (postData.type) {
