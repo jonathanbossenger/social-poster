@@ -1,5 +1,6 @@
-const { contextBridge } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  platform: process.platform
+  platform: process.platform,
+  postToSocialMedia: (accounts, postData) => ipcRenderer.invoke('post-to-social-media', accounts, postData)
 });

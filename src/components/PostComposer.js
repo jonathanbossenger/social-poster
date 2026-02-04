@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function PostComposer({ accounts, onSchedule }) {
+function PostComposer({ accounts, onSchedule, onPostNow }) {
   const [postType, setPostType] = useState('simple');
   const [content, setContent] = useState('');
   const [threadPosts, setThreadPosts] = useState(['']);
@@ -11,6 +11,7 @@ function PostComposer({ accounts, onSchedule }) {
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
+  const [isPosting, setIsPosting] = useState(false);
 
   const postTypes = [
     { id: 'simple', name: 'Simple Post' },
@@ -88,7 +89,7 @@ function PostComposer({ accounts, onSchedule }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (selectedAccounts.length === 0) {
@@ -161,11 +162,44 @@ function PostComposer({ accounts, onSchedule }) {
     if (postData.scheduledFor) {
       onSchedule(postData);
       alert('Post scheduled successfully!');
+      // Reset form
+      resetForm();
     } else {
-      alert('Post would be published immediately to selected accounts');
+      // Post immediately
+      setIsPosting(true);
+      try {
+        const response = await onPostNow(selectedAccounts, postData);
+        
+        if (response.success) {
+          const successCount = response.results.filter(r => r.success).length;
+          const failCount = response.results.filter(r => !r.success).length;
+          
+          let message = `Posted successfully to ${successCount} account(s)`;
+          if (failCount > 0) {
+            message += `\n${failCount} post(s) failed`;
+          }
+          
+          // Show detailed results
+          const details = response.results.map(r => 
+            `${r.platform} (${r.username}): ${r.success ? '✓ Success' : '✗ Failed - ' + r.error}`
+          ).join('\n');
+          
+          alert(message + '\n\nDetails:\n' + details);
+          
+          // Reset form after successful post
+          resetForm();
+        } else {
+          alert('Failed to post: ' + response.error);
+        }
+      } catch (error) {
+        alert('Error posting: ' + error.message);
+      } finally {
+        setIsPosting(false);
+      }
     }
+  };
 
-    // Reset form
+  const resetForm = () => {
     setContent('');
     setThreadPosts(['']);
     setImageUrls(['']);
@@ -410,8 +444,8 @@ function PostComposer({ accounts, onSchedule }) {
 
           {/* Submit Button */}
           <div className="form-actions">
-            <button type="submit" className="btn-primary btn-large">
-              {scheduleDate && scheduleTime ? 'Schedule Post' : 'Post Now'}
+            <button type="submit" className="btn-primary btn-large" disabled={isPosting}>
+              {isPosting ? 'Posting...' : (scheduleDate && scheduleTime ? 'Schedule Post' : 'Post Now')}
             </button>
           </div>
         </form>

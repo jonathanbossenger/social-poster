@@ -47,6 +47,29 @@ function App() {
     setScheduledPosts(scheduledPosts.filter(post => post.id !== id));
   };
 
+  const postNow = async (selectedAccountIds, postData) => {
+    const selectedAccounts = accounts.filter(acc => selectedAccountIds.includes(acc.id));
+    
+    if (selectedAccounts.length === 0) {
+      return { success: false, error: 'No accounts selected' };
+    }
+
+    // Check if running in Electron environment
+    if (!window.electronAPI || !window.electronAPI.postToSocialMedia) {
+      return { 
+        success: false, 
+        error: 'Posting is only available in the Electron app. Please run the application using "npm start" instead of opening in a browser.' 
+      };
+    }
+
+    try {
+      const response = await window.electronAPI.postToSocialMedia(selectedAccounts, postData);
+      return response;
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -78,6 +101,7 @@ function App() {
           <PostComposer
             accounts={accounts}
             onSchedule={addScheduledPost}
+            onPostNow={postNow}
           />
         )}
         {activeTab === 'accounts' && (
