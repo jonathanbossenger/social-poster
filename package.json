@@ -5,8 +5,8 @@
   "main": "main.js",
   "scripts": {
     "build": "webpack --mode production",
-    "start": "npm run build && electron .",
-    "dev": "webpack --mode development && electron ."
+    "start": "npm run build && electron . --no-sandbox",
+    "dev": "webpack --mode development && electron . --no-sandbox"
   },
   "keywords": [],
   "author": "",

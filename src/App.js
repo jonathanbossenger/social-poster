@@ -32,7 +32,7 @@ function App() {
   }, [scheduledPosts]);
 
   const addAccount = (account) => {
-    setAccounts([...accounts, { ...account, id: Date.now() }]);
+    setAccounts([...accounts, { ...account, id: Date.now() + Math.random() }]);
   };
 
   const removeAccount = (id) => {
@@ -40,7 +40,7 @@ function App() {
   };
 
   const addScheduledPost = (post) => {
-    setScheduledPosts([...scheduledPosts, { ...post, id: Date.now() }]);
+    setScheduledPosts([...scheduledPosts, { ...post, id: Date.now() + Math.random() }]);
   };
 
   const removeScheduledPost = (id) => {
